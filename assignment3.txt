@@ -1,0 +1,453 @@
+
+1. what is getpid() and how to use it..??
+
+ANS. getpid() is function that returns the process id of the current process.
+     This function is often used by routine that generate unique filenames.
+
+2. what is getppid() and how to use it..??
+
+ANS. getppid() is a function that returns the process id of the parent of 
+     the parent of the current process.
+
+3. what is fork()? what happens when you use fork() in your program..??
+
+ANS. fork() is a system call used for creating a new process i.e. child process
+     which run concurrently with the process that creates tha fork() call i.e. parent process.
+     After using fork() in our program, both child and parent process run the same program as 
+     well as they resume execution as both have called the system call.
+
+4. what is wait() / waitpid() and how to use it..??
+
+ANS. wait() blocks the current process until one of its child terminates. As the child 
+     process terminates, parent process continues its execution after wait system call instruction
+     and returns the process id of the terminated child.     
+
+     waitpid() system call suspends execution od the calling process until a child specified
+     by pid has changed state. It returns the process id of the child whose state has changes.
+
+5. what are zombie processes? when they will get created.? How to kill the zombie processes..?
+
+ANS. Zombie processes are the processes that have completed their execution but still have
+     an entry in the process table. It is a process in the terminated state. Zombie process is usually
+     created for child processes, as the parent process still needs to read its child process' exit
+     status. One the state of of child process is known using the wait system call, the zombie process is 
+     eliminated from the process table, this is how the zombie process is killed.
+
+6. what are orphan ​processes? when they will get created.?
+
+ANS. Orphan processes are those processes that are still running even though their parent process has
+     terminated or finished. A process can be orphaned intentionally or unintentionally.
+     An intentionally orphaned process runs in the background without any manual support. This is usually
+     done to start an indefinitely running service or to complete a long-running job without user attention.
+     An unintentionally orphaned process is created when its parent process crashes or terminates.
+
+7. what is user space?
+
+ANS. User space is the part of system memory in which user processes run. It refers to all the code in an
+     operating sytem that is outside the kernel. Each user space process run in its own virtual memory space
+     and it can't access the memory of other processes until it is allowed explicitly.
+
+8. what is kernel space / system space? 
+
+ANS. Kernel space is the space where kernel which is the core of operating system executes and provides its services.
+     User is not allowed to interfere with the kernel space. This space is strictly reserved for running the kernel
+     extensions and most device drivers. 
+ 
+9. What is IPC(inter process communication) and what is the need of it.
+
+ANS. Inter process communication is a set of programming interface which allow a programmer to coordinate activities
+     among various program processes which can run concurrently in an operating system. This allows a specific 
+     program to handle many user requests at the same time. Since every single user request may result in multiple
+     processes running in the operating system, the process may require to communicate with each other.
+     is used for exchanging data between multiple threads in one or more processes or programs. The Processes may
+     be running on single or multiple computers connected by a network.
+
+10. what is Unnamed PIPE? how to create it? When we need this??
+
+ANS. Once a named pipe is created, processes can open(), read() and write() them just like any other file.
+
+	#include <unistd.h>
+	
+	int pipe(int fd[2]);
+
+	Returns 2 file descriptors in the fd array.
+
+	fd[0] is for read
+	fd[1] write
+	
+	Each end of the pipe is closed individually using normal close() system call. Pipes are only available the
+  	process that creates the pipe.
+
+11. what is named PIPE? how to create it? When we need this??
+
+ANS. Named pipes are also called FIFO’s (first in first out). They have names and exist as special files within 
+     a file system. (file type p) They exist until they are removed with rm or unlink() They can be used by
+     unrelated process not just descendants of the pipe creator.
+
+	From the shell
+	$ mknod mypipe p
+	
+	From a C program
+	mknod ( “mypipe”, SIFIFO, 0 );
+
+	Once a named pipe is created, processes can open(), read() and write() them just like any other file.
+
+12. What is the difference between Unnamed PIPE and named PIPE?
+
+ANS. i) Named pipe if referred through this name only by the reader and writer. All instances of a named pipe share the same pipe name.
+	whereas, unnamed pipes are not given a name. It is accessible through two file descriptors that are created through the 
+	function pipe(fd[2]), where fd[1] signifies the write file descriptor, and fd[0] describes the read file descriptor.
+
+    ii) An unnamed pipe is only used for communication between a child and it’s parent process, while a named pipe can be used for 
+	communication between two unnamed process as well. Processes of different ancestry can share data through a named pipe.
+
+    iii) A named pipe exists in the file system. After input-output has been performed by the sharing processes, the pipe still exists 
+	in the file system independently of the process, and can be used for communcation between some other processes.
+	On the other hand, an unnamed pipe vanishes as soon as it is closed, or one of the process (parent or child) completes execution.
+
+     iv) A named pipe exists in the file system. After input-output has been performed by the sharing processes, the pipe still exists in 
+	the file system independently of the process, and can be used for communcation between some other processes.
+	On the other hand, an unnamed pipe vanishes as soon as it is closed, or one of the process (parent or child) completes execution.
+
+      v) A Named pipe can have multiple process communicating through it, like multiple clients connected to one server. On the other hand,
+	an unnamed pipe is a one-way pipe that typically transfers data between a parent process and a child process.
+
+      vi) An unnamed type is simple to use and incurs less overheads, whereas a named pipe provides us with greater functionalities.
+
+13. what are execl,exec,execv and difference between them..?? 
+
+ANS. These functions all execute a new program, replacing the current process
+     execl - The execl function is most commonly used to overlay a process image that has been created by a call to the fork function.
+	     It is the filename of the file that contains the executable image of the new process.
+
+     exec - The exec system call is used to execute a file which is residing in an active process. When exec is called the previous executable 
+	    file is replaced and new file is executed. It can be said that using exec system call we can replace the old file or program from the 
+	    process with a new file or program.
+
+14. what is semaphore? Explore sem_init(), sem_create(), sem_destroy(), sem_unlink(), sem_wait(), sem_post().
+
+ANS. Semaphore is simply a variable that is non-negative and shared between threads.
+     It uses two operations: 1)wait 2) signal for the process synchronization.
+     A semaphore either allows or disallows access to the resource, which depends on how it is set up.
+     It is a mechanism that can be used to provide synchronization of tasks. It is a low-level synchronization mechanism.
+     Semaphore will always hold a non-negative integer value. Semaphore can be implemented using test operations and interrupts, which should 
+     be executed using file descriptors.
+
+     sem_init() - The sem_init() function is used to initialise the unnamed semaphore referred to by sem. This semaphore remains usable until the semaphore is destroyed.
+     
+     sem_create() - The SEM_CREATE function creates a reference to a semaphore in the current process. If the specified semaphore already exists in the system, a reference
+		    to the existing semaphore is created. If the semaphore does not exist, a new semaphore is created in the system and a reference to it is created
+
+     sem_destroy() - It  destroy an unnamed semaphore.Only a semaphore that was created using sem_init() may be destroyed using sem_destroy().
+                     The effect of subsequent use of the semaphore sem is undefined until sem is re-initialised by another call to sem_init().
+		     It is safe to destroy an initialised semaphore upon which no threads are currently blocked.
+     
+     sem_wait() - The sem_wait() function locks the semaphore referenced by sem by performing a semaphore lock operation on that semaphore.
+		  If the semaphore value is currently zero, then the calling thread will not return from the call to sem_wait() until it either
+		  locks the semaphore or the call is interrupted by a signal. The sem_trywait() function locks the semaphore referenced by sem only
+		  if the semaphore is currently not locked; that is, if the semaphore value is currently positive. Otherwise, it does not lock the semaphore.
+		  The state of semaphore remains locked until the sem_post() function is executed and returns successfully.
+		
+     sem_post() - This function unlocks the semaphore referenced by sem by performing a semaphore unlock operation on that semaphore.
+ 		   If successful, the sem_post() function returns zero; otherwise the function returns -1 and sets errno to indicate the error.
+
+     sem_unlink() - sem_unlink() removes the named semaphore referred to by name. The semaphore name is removed immediately. The semaphore is destroyed
+       		    once all other processes that have the semaphore open close it.
+
+15. what is mutex? Difference between semaphore and mutex.
+
+ANS. Mutex is a mutual exclusion object that synchronizes access to a resource. It is created with a unique name at the start of a program. The Mutex is a locking mechanism
+     that makes sure only one thread can acquire the Mutex at a time and enter the critical section.
+     
+     A Mutex is different than a semaphore as it is a locking mechanism while a semaphore is a signalling mechanism. A binary semaphore can be used as a Mutex but a Mutex
+     can never be used as a semaphore.
+
+
+Process Management
+
+Note : 
+Read Man pages of the functions/commands mentioned in the hint of each question. 
+You will get the name of header file to be included for that function to work, in the man page of that respective function. 
+
+Questions : 
+
+#1 Parent and child process 
+   Write a C/CPP program to create a child process. Child should print its pid and its parent’s pid and should exit by printing message as “Child Exiting …”. Parent should print its pid and should exit by printing message as “Parent Exiting ..”. 
+   (Hint(functions to be used) : getpid, fork, getppid) 
+
+	#include<sys/types.h>
+	#include<unistd.h>
+	using namespace std;
+	
+	int main()
+	{
+        	  pid_t pid;
+	
+        	    pid=fork();
+	
+        	      if( pid == 0 ){
+	
+        	                 cout<<"This is child process: "<<getpid();
+
+	                                  }
+        	      else if( pid > 1 )
+                	          {
+                        	   cout<<"This is parent process:"<<getppid();
+	
+                                  }
+                	  else
+                        	    {
+                                     cout<<"Process id not created";
+	
+                                    }
+			return 0;
+	}
+
+#2 Scheduling functions 
+Write a program in C/CPP to check the scheduling policy used by the process and its priority. 
+	(Hint(functions to be used) : sched_getscheduler, getpid) 
+	
+	#include<iostream>
+
+	#include<unistd.h>
+	
+	#include<sched.h>
+
+	using namespace std;
+
+	int main()
+	{
+       
+		int a;
+       
+ 		a=sched_setscheduler(getpid(),SCHED_FIFO,0);
+
+ 
+	       if(a==0)
+ 
+ 	      {
+              
+  		cout<<"priority set";
+ 
+       	 	}
+        	else
+     
+   		{
+            
+    		cout<<"priority not set";
+     
+   		}
+
+	return 0;
+	}
+	
+	
+	
+	
+#3 Scheduling functions 
+Write a program in C/CPP to get the current scheduling policy of the process. 
+The program should change the scheduling policy to the other than current one. 
+Program should report errors if it fails to set the new scheduling policy. 
+	(Hint(functions to be used) : sched_setscheduler, getpid) 
+
+	#include<iostream>
+	#include<unistd.h>
+	#include<sys/types.h>
+	#include<stdlib.h>
+	#include<sched.h>
+	
+	using namespace std;
+
+	int main()
+	{
+	
+        	int a;
+        	a = sched_getscheduler(getpid());
+        	switch(a)
+        	{
+        	        case SCHED_OTHER: cout<<"another scheduling policy"<<endl;
+        	        break;
+        	        case SCHED_RR: cout<<"Round robin scheduling"<<endl;
+        	        break;
+        	        case SCHED_FIFO: cout<<"First in first out"<<endl;
+        	        break;
+        	}
+        	return 0;
+	}
+
+
+
+#4Scheduling algorithm 
+	Write a program in C/CPP to take process name, its arrival time and execution/burst time as input. 
+	Use FCFS(non-preemptive) algorithm to calculate wait time of each process, average 
+	wait time, turnaround time of each process and average turnaround time. 
+	Calculation of time will start from the arrival time of first process.
+	execution/burst time - Time required for execution of process
+	Wait time of process = response time of process - arrival time process
+	Response time of process : time at which process is scheduled to run
+	Average wait time = (sum of wait time of each process) / (number of processes) 
+	Turnaround time of process = (finish/completion time of process) - (arrival time of process)
+	Average turnaround time = (sum of turnaround time of each process) / (number of processes) 
+
+	
+
+
+
+
+Sample Input 
+			     
+Process	arrival time	 execution/burst time
+P1	0	3
+P2	2	5
+P3	5	6
+
+Sample Output 
+Process	Response time	Completion/finish time	Waiting time	Avg waiting time	Turnaround time	Avg turnaround time
+P1	0	3	0-0 = 0	(0+1+3)/3=4/3	3-0=3	(3+6+9)/3=18/3=6
+P2	3	8	3-2=1	 	8-2=6	 
+P3	8	14	8-5=3	 	14-5=9	 
+
+
+
+#include<iostream>
+
+#include<cstring>
+
+using namespace std;
+
+
+class process
+{
+
+        public:
+                string name;
+ 
+               int arrTime;
+           
+     int burstTime;
+            
+    int respTime;
+        
+        int compTime;
+      
+          int waitTime;
+          
+      int turnTime;
+
+};
+
+
+int main()
+{
+     
+   int i,noproc,avgwaitTime,avgturnTime,sum1 = 0,sum2 = 0;
+ 
+       cout<<"no of process=\n";
+  
+      cin>>noproc;
+       
+ process p[ noproc ];
+
+    
+    for(i=0;i<noproc;i++)
+    
+    {
+       
+         cout<<"\n enter the process "<<i<<" name = ";
+           
+     cin>>p[i].name;
+
+         
+       cout<<"\n enter the process "<<i<<" arrival time = ";
+     
+           cin>>p[i].arrTime;
+
+         
+       cout<<"\n enter the process "<<i<<" burst time = ";
+      
+          cin>>p[i].burstTime;
+
+  
+      }
+
+      
+  for(i=0; i<noproc; i++)
+ 
+       {
+
+if( i== 0){
+                      
+  p[i].respTime = p[i].arrTime;
+     
+  
+                 p[i].compTime = p[i].respTime + p[i].burstTime;
+  
+                 p[i].waitTime = p[i].respTime - p[i].arrTime;
+     
+                 p[i].turnTime = p[i].compTime - p[i].arrTime;
+      
+}
+       
+else
+{
+
+  
+  p[i].respTime = p[i-1].respTime + p[i-1].burstTime;
+ p[i].compTime = p[i].respTime + p[i].burstTime;
+
+ p[i].waitTime = p[i].respTime - p[i].arrTime;
+  
+ p[i].turnTime = p[i].compTime - p[i].arrTime;
+  
+              }
+       
+ }
+
+
+        
+for(i=0;i<noproc;i++)
+    
+    {
+     
+           sum1= sum1 + p[i].waitTime;
+      
+          sum2= sum2 + p[i].turnTime;
+   
+     }
+
+    
+    avgwaitTime = sum1/noproc;
+    
+    avgturnTime = sum2/noproc;
+
+      
+for(i=0;i<noproc;i++)
+       
+ {
+
+cout<<"\n process no "<<i+1;
+   
+cout<<"\n name "<<p[i].name;
+  
+cout<<"\n arrival time "<<p[i].arrTime;
+   
+cout<<"\n burst time "<<p[i].burstTime;
+           
+cout<<"\n response time "<<p[i].respTime;
+           
+cout<<"\n complete time "<<p[i].compTime;
+   
+cout<<"\n waiting time "<<p[i].waitTime;
+       
+cout<<"\n turnaround time "<<p[i].turnTime;
+       
+cout<<endl;
+   
+     }
+cout<<"\n average waiting time = "<<avgwaitTime;
+   
+cout<<"\n average turnaround time ="<<avgturnTime;
+
+return 0;
+
+}
